@@ -1,0 +1,25 @@
+{
+  "name": "bulkapi",
+  "version": "0.0.0",
+  "description": "Combine multiple APIs into single, call each API, and return a set of responses.",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/codeofnode/bulkapi.git"
+  },
+  "scripts": {
+    "test": "node test"
+  },
+  "keywords": [
+    "bulk",
+    "multiple",
+    "api",
+    "requests",
+    "single"
+  ],
+  "author": "Ramesh Kumar <codeofnode@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/codeofnode/bulkapi/issues"
+  },
+  "homepage": "https://github.com/codeofnode/bulkapi#readme"
+}
