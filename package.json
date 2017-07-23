@@ -1,13 +1,10 @@
 {
   "name": "bulkapi",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Combine multiple APIs into single, call each API, and return a set of responses.",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/codeofnode/bulkapi.git"
-  },
-  "scripts": {
-    "test": "node test"
   },
   "keywords": [
     "bulk",
@@ -21,5 +18,7 @@
   "bugs": {
     "url": "https://github.com/codeofnode/bulkapi/issues"
   },
-  "homepage": "https://github.com/codeofnode/bulkapi#readme"
+  "dependencies": {
+    "templist": "^0.0.2"
+  }
 }
