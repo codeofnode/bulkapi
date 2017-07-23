@@ -1,6 +1,6 @@
 {
   "name": "bulkapi",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Combine multiple APIs into single, call each API, and return a set of responses.",
   "repository": {
     "type": "git",
@@ -19,6 +19,6 @@
     "url": "https://github.com/codeofnode/bulkapi/issues"
   },
   "dependencies": {
-    "templist": "^0.0.2"
+    "templist": "^0.0.3"
   }
 }
