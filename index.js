@@ -22,7 +22,7 @@ var ifEndForObjWalk = function ifEndForObjWalk(obj, depth) {
   if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' && obj !== null) {
     if (obj.from && obj._) {
       var toRet = Object.keys(obj).filter(function (ky) {
-        return ky !== '_';
+        return ky !== '_' && ky !== 'from';
       });
       toRet.toEndBulk = true;
       return toRet;
