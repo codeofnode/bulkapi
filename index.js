@@ -14,6 +14,8 @@ var _util = require('./util');
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /** @const {function} ifEndForObjWalk - the function to find if no more iteration required */
@@ -230,7 +232,7 @@ var BulkAPI = function () {
      */
     value: function resolveRequest(reqObj, resultArr) {
       var nowOb = { result: resultArr, rootResult: this.rootResult };
-      var from = CONVERT(reqObj.body.from, nowOb);
+      var from = CONVERT(reqObj.body && reqObj.body.from, nowOb);
       if (Array.isArray(from)) {
         Object.assign(reqObj.body, {
           _: from.map(function (dt, ind) {
@@ -273,43 +275,115 @@ var BulkAPI = function () {
     /*
      * resolve the paylaod
      * @param {Object} req - the incoming request instance
-     * @param {Object} payload - the the payload of request
      * @return {Object[]} res - the resolution of all the apis
      */
 
   }, {
     key: 'resolve',
-    value: async function resolve(req, payload) {
-      var res = [];
-      if (!Array.isArray(this.rootResult)) this.rootResult = res;
-      this.resolveRequest(req, res);
-      var arr = BulkAPI.divide(payload);
-      var ln = arr.length;
-      var z = 0;
-      for (; z < ln; z += 1) {
-        if (arr[z].method) {
-          break;
-        } else {
-          this.resolveRequest(arr[z], res);
-          res.push(arr[z].body);
-        }
+    value: function () {
+      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(req) {
+        var res, arr, ln, z, prmarr;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                res = [];
+
+                if (!Array.isArray(this.rootResult)) this.rootResult = res;
+                this.resolveRequest(req, res);
+                arr = BulkAPI.divide(req.body);
+                ln = arr.length;
+                z = 0;
+
+              case 6:
+                if (!(z < ln)) {
+                  _context.next = 16;
+                  break;
+                }
+
+                if (!arr[z].method) {
+                  _context.next = 11;
+                  break;
+                }
+
+                return _context.abrupt('break', 16);
+
+              case 11:
+                this.resolveRequest(arr[z], res);
+                res.push(arr[z].body);
+
+              case 13:
+                z += 1;
+                _context.next = 6;
+                break;
+
+              case 16:
+                if (!(z < ln)) {
+                  _context.next = 30;
+                  break;
+                }
+
+                if (!arr[z].first) {
+                  _context.next = 26;
+                  break;
+                }
+
+                this.resolveRequest(arr[z], res);
+                _context.t0 = res;
+                _context.next = 22;
+                return this.promisify(arr[z]);
+
+              case 22:
+                _context.t1 = _context.sent;
+
+                _context.t0.push.call(_context.t0, _context.t1);
+
+                _context.next = 27;
+                break;
+
+              case 26:
+                return _context.abrupt('break', 30);
+
+              case 27:
+                z += 1;
+                _context.next = 16;
+                break;
+
+              case 30:
+                prmarr = [];
+
+                for (; z < ln; z += 1) {
+                  this.resolveRequest(arr[z], res);
+                  prmarr.push(this.promisify(arr[z]));
+                }
+                _context.t2 = res.push;
+                _context.t3 = res;
+                _context.t4 = _toConsumableArray;
+                _context.next = 37;
+                return Promise.all(prmarr);
+
+              case 37:
+                _context.t5 = _context.sent;
+                _context.t6 = (0, _context.t4)(_context.t5);
+
+                _context.t2.apply.call(_context.t2, _context.t3, _context.t6);
+
+                return _context.abrupt('return', res);
+
+              case 41:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function resolve(_x3) {
+        return _ref.apply(this, arguments);
       }
-      for (; z < ln; z += 1) {
-        if (arr[z].first) {
-          this.resolveRequest(arr[z], res);
-          res.push((await this.promisify(arr[z]))); // eslint-disable-line no-await-in-loop
-        } else {
-          break;
-        }
-      }
-      var prmarr = [];
-      for (; z < ln; z += 1) {
-        this.resolveRequest(arr[z], res);
-        prmarr.push(this.promisify(arr[z]));
-      }
-      res.push.apply(res, _toConsumableArray((await Promise.all(prmarr))));
-      return res;
-    }
+
+      return resolve;
+    }()
 
     /*
      * call bulk for express like handlers
@@ -319,7 +393,7 @@ var BulkAPI = function () {
     key: 'callbulk',
     value: function callbulk(req, res) {
       this.rootResult = req.rootResult;
-      this.resolve(req, req.body).then(this.success.bind(res)).catch(this.failure.bind(res));
+      this.resolve(req).then(this.success.bind(res)).catch(this.failure.bind(res));
     }
   }], [{
     key: 'divide',
@@ -327,12 +401,12 @@ var BulkAPI = function () {
       if ((typeof payload === 'undefined' ? 'undefined' : _typeof(payload)) !== 'object' || payload === null) return [];
       var base = payload.base;
       if (!(0, _util.isObject)(base)) base = {};
-      return (Array.isArray(payload._) ? payload._ : Array.isArray(payload) ? payload : [payload]).map(function (ob) {
+      return (Array.isArray(payload._) ? payload._ : payload._ ? [payload._] : Array.isArray(payload) ? payload : [payload]).map(function (ob) {
         return {
           method: ob.method || base.method,
           url: (0, _util.resolveUrl)((0, _util.stringify)((0, _util.exists)(base.url) ? base.url : ''), (0, _util.stringify)((0, _util.exists)(ob.url) ? ob.url : '')),
           headers: Object.assign({}, base.headers, ob.headers),
-          body: Object.assign({}, base.body, ob.body),
+          body: Object.assign(Array.isArray(ob.body) ? new Array(ob.body.length) : {}, base.body, ob.body),
           first: (0, _util.exists)(ob.first) ? Boolean(ob.first) : Boolean(base.first)
         };
       }).sort(function (oa, ob) {
