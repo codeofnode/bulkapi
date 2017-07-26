@@ -1,6 +1,6 @@
 {
   "name": "bulkapi",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Combine multiple APIs into single, call each API, and return a set of responses.",
   "repository": {
     "type": "git",
