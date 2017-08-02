@@ -29,10 +29,10 @@ const WALK = function WALK(fun, rt, obj, key, depth) {
     } else {
       kys = Object.keys(ob);
     }
-    const lastln = kys.length;
+    const lastln = kys.length - 1;
     const deep = dep + 1;
     for (let z = 0; z <= lastln; z += 1) {
-      WALK(fun, ob, ob[kys[z]], kys[z], deep);
+      WALK(fun, ob, ob[kys[z]], kys[z], deep, z === lastln);
     }
   }
 };
