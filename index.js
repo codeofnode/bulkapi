@@ -192,8 +192,9 @@ class BulkAPI {
         url: resolveUrl(stringify(exists(base.url) ? base.url : ''),
                 stringify(exists(ob.url) ? ob.url : '')),
         headers: Object.assign({}, base.headers, ob.headers),
-        body: Object.assign(Array.isArray(ob.body) ? new Array(ob.body.length) : {},
-          base.body, ob.body),
+        body: (typeof ob.body !== 'object' || ob.body === null) ? ob.body
+              : Object.assign(Array.isArray(ob.body)
+                ? new Array(ob.body.length) : {}, base.body, ob.body),
         first: exists(ob.first) ? Boolean(ob.first) : Boolean(base.first),
       })).sort((oa, ob) => {
         const sc = ab => (notExists(ab.method) ? 0 : (ab.first ? 1 : 2));
@@ -217,8 +218,13 @@ class BulkAPI {
         }, nowOb))),
       });
     }
-    delete reqObj.body.from; // eslint-disable-line no-param-reassign
-    CONVERT(reqObj.body, nowOb);
+    if (typeof reqObj.body === 'object' && reqObj.body !== null) {
+      delete reqObj.body.from; // eslint-disable-line no-param-reassign
+    }
+    const converted = CONVERT(reqObj.body, nowOb);
+    if (typeof reqObj.body !== 'object' || reqObj.body === null || (converted !== undefined && converted !== null)) {
+      Object.assign(reqObj, { body: converted });
+    }
   }
 
   /*
