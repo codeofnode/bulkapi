@@ -164,10 +164,11 @@ class BulkAPI {
   constructor(handler, mockReq = MockReq, mockRes = MockRes, succ, fail) {
     this.handler = handler;
     this.success = (typeof succ !== 'function') ? function success(data) {
+      this.setHeader('Content-Type', 'application/json');
       this.end(stringify(data));
     } : succ;
     this.failure = (typeof fail !== 'function') ? function failure(err) {
-      this.statusCode = 409;
+      this.writeHead(409, { 'Content-Type': 'application/json' });
       this.end(stringify(err.message || err));
       console.log(err); // eslint-disable-line no-console
     } : fail;
